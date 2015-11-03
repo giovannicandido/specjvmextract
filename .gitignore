@@ -1,0 +1,6 @@
+.idea/
+*.iml
+build/
+testesjvm/
+gradle/wrapper/
+output.csv
