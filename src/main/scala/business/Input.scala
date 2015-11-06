@@ -16,7 +16,7 @@ object Input {
     val test = XML.loadFile(file)
     // (test \ "configs") retorna NodeSeq
     // Transforma em Seq[String]
-    val configs = (test \ "configs").map(_.text.trim)
+    val configs = (test \ "configs" \ "config").map(_.text.trim)
 
     // Busca por benchmak-results, exclui os com nome "check"
     val xmlResults = (test \ "benchmark-results" \ "benchmark-result").filter(!_.attribute("name").exists(_.text == "check"))
@@ -31,13 +31,23 @@ object Input {
       // Operations
       val operations:Double = (xmlResult \ "iterations" \ "iteration-result")
         .head.attribute("operations").map(_.text.toDouble).getOrElse(0.0)
+
+      val threads: Int = try {
+        val config = configs.filter(_.contains("specjvm.benchmark.threads"))
+        val thread = config.head.split("=")(1)
+        Integer.parseInt(thread)
+      }catch {
+        case ex: Exception =>
+          println(ex.getMessage)
+          0
+      }
       // Retorna Result
-      Result(name, operations, iterationTime)
+      Result(name, operations, iterationTime, threads)
     })
 
-    // Extrai commandLine
+    // Extrai commandLine e filtra deixando apenas o que começa com -XX
     val commandLine = (test \ "jvm-info" \ "spec.jvm2008.report.jvm.command.line")
-      .head.text
+      .head.text.split(" ").filter(_.startsWith("-XX")).mkString(" ")
     // Retorna SpecJVMResult Usa apenas o primeiro resultado, já que cada arquivo só tem um resultado
     SpecJVMResult(configs, results.head, commandLine)
   }

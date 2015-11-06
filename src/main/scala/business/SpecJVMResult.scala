@@ -10,7 +10,7 @@ case class SpecJVMResult(configs: Seq[String], result: Result,
     * @return Um Array string, cada um correspondendo a um campo
     */
   def transformToCSVLine(): Array[String] = {
-    val array: Array[String] = Array(result.name, result.iterationTime, result.operations.toString,
+    val array: Array[String] = Array(result.name, result.threads.toString, result.iterationTime, result.operations.toString,
       configs.mkString("\n"), commandLine)
     array
   }
@@ -21,6 +21,6 @@ object SpecJVMResult {
     * @return
     */
   def cabecalho(): Array[String] = {
-    Array("Benchmark","Iteration Time", "Operations","Configs","Command Line")
+    Array("Benchmark","Threads","Iteration Time", "Operations","Configs","Parâmetros JVM")
   }
 }
