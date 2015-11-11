@@ -3,3 +3,4 @@
 build/
 testesjvm/
 output.csv
+.~lock*

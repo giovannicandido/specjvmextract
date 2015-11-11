@@ -17,7 +17,7 @@ object Input {
     // (test \ "configs") retorna NodeSeq
     // Transforma em Seq[String]
     val configs = (test \ "configs" \ "config").map(_.text.trim)
-
+    println(file.getName)
     // Busca por benchmak-results, exclui os com nome "check"
     val xmlResults = (test \ "benchmark-results" \ "benchmark-result").filter(!_.attribute("name").exists(_.text == "check"))
     // Transforma em Seq[Result]
@@ -29,8 +29,12 @@ object Input {
       val iterationTime = xmlResult.attribute("iterationTime")
         .map(_.text.trim).getOrElse("")
       // Operations
-      val operations:Double = (xmlResult \ "iterations" \ "iteration-result")
-        .head.attribute("operations").map(_.text.toDouble).getOrElse(0.0)
+      val operations:Double = try {
+        (xmlResult \ "iterations" \ "iteration-result")
+          .head.attribute("operations").map(_.text.toDouble).getOrElse(0.0)
+      }catch {
+        case e: Exception => 0.0
+      }
 
       val threads: Int = try {
         val config = configs.filter(_.contains("specjvm.benchmark.threads"))
@@ -49,6 +53,6 @@ object Input {
     val commandLine = (test \ "jvm-info" \ "spec.jvm2008.report.jvm.command.line")
       .head.text.split(" ").filter(_.startsWith("-XX")).mkString(" ")
     // Retorna SpecJVMResult Usa apenas o primeiro resultado, já que cada arquivo só tem um resultado
-    SpecJVMResult(configs, results.head, commandLine)
+    SpecJVMResult(configs, results.head, commandLine, file.getName)
   }
 }

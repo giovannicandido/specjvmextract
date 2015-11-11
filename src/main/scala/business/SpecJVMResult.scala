@@ -4,13 +4,13 @@ package business
   * @author Giovanni Silva
   */
 case class SpecJVMResult(configs: Seq[String], result: Result,
-                         commandLine: String) {
+                         commandLine: String, fileName: String) {
   /**
     * Transforma um SpecJVMResult em um array de strings, esse array é utilizado para gerar cada linha do CSV
     * @return Um Array string, cada um correspondendo a um campo
     */
   def transformToCSVLine(): Array[String] = {
-    val array: Array[String] = Array(result.name, result.threads.toString, result.iterationTime, result.operations.toString,
+    val array: Array[String] = Array(fileName, result.name, result.threads.toString, result.iterationTime, result.operations.toString,
       configs.mkString("\n"), commandLine)
     array
   }
@@ -21,6 +21,6 @@ object SpecJVMResult {
     * @return
     */
   def cabecalho(): Array[String] = {
-    Array("Benchmark","Threads","Iteration Time", "Operations","Configs","Parâmetros JVM")
+    Array("Nome do Arquivo","Benchmark","Threads","Iteration Time", "Operations","Configs","Parâmetros JVM")
   }
 }
